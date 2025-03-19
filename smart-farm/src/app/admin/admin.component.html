@@ -1,0 +1,51 @@
+
+<div class="body">
+
+<div class ="square">
+<div>
+    <h1>Device Management</h1>
+</div>
+
+
+<h2>Choose an Action</h2>
+<select [(ngModel)]="selectedValue">
+  <option value="add">Add Device</option>
+  <option value="del">Delete Device</option>
+</select>
+
+
+
+<div *ngIf= "selectedValue == 'add'">
+    <h2>Add Device</h2>
+    <div>
+      <form [formGroup] = "newDev">
+        <input type="text" formControlName="ID" placeholder="ID">
+        <input type="text" formControlName="name" placeholder="name">
+        <input type="text" formControlName="IP" placeholder="IP address">
+        <input type="text" formControlName="desc" placeholder="description">
+        <input type="text" formControlName ="type" placeholder="type">
+      
+      </form>
+
+      <button (click)="addDevice()">Add Device</button>
+    </div>
+  </div>
+
+
+  <div *ngIf= "selectedValue == 'del'">
+    <h2>Delete Device</h2>
+    <div>
+      <input type="text" [formControl]="ID" placeholder="ID">
+      <button (click)="deleteDevice()">Delete</button>
+    </div>
+</div>
+
+<div>
+    <p id = "response"> Response from server: null</p>
+</div>
+
+</div>
+</div>
+
+
+

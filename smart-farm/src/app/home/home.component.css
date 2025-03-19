@@ -1,0 +1,12 @@
+
+
+.block{
+    border-radius: 10px;
+    font-size: 30px;
+    width: 60%;
+    padding: 2%;
+    background-color:#a2a2a2;
+    text-align: left;
+    font-family: 'Courier New';
+    color:rgb(255, 255, 255);
+}

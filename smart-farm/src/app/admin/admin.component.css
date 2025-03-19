@@ -1,0 +1,14 @@
+
+
+.square{
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 5%;
+    font-size: 20px;
+    width: 50%;
+    height: 50%;
+    background-color:#cdcccc;
+    color:rgb(39, 39, 39)
+}

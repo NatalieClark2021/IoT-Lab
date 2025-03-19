@@ -1,0 +1,30 @@
+.header{
+    background-color: brown;
+    padding: 20px 10px;
+    display: flex;
+    align-items:center;
+}
+
+    a {
+    color: rgb(222, 173, 173);
+    padding-left: 24px;
+    text-decoration: none;
+    font-size: 22px;
+  }
+
+  .header a:hover{
+    color: black;
+  }
+
+.left{
+    padding: 1%;
+    font-size: 30px;
+    color:rgb(255, 255, 255);
+}
+
+.center {
+    padding-left: 2%;
+}
+.right{
+    padding-right: 2%;
+}
