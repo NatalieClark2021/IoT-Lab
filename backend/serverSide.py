@@ -162,7 +162,7 @@ def get_devicesSQL():
 
     cnx = mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
     cursor = cnx.cursor(dictionary=True)
-    query = ("SELECT * FROM devicest;")
+    query =("SELECT * FROM devicest;")
     cursor.execute(query)
     devices = cursor.fetchall()
 
@@ -179,7 +179,7 @@ def delete_deviceSQL(device_id):
         cursor = cnx.cursor()
 
         #SQL
-        query = "DELETE FROM devicest WHERE DeviceID = %s;"
+        query ="DELETE FROM devicest WHERE DeviceID = %s;"
         cursor.execute(query, (device_id,))
         cnx.commit()
 
@@ -237,12 +237,12 @@ def deleteDevice():
     if theID:
         response = "success"
         delete_deviceSQL(theID)
+        return {"message":"Deleted Device"}, 200
 
     else:
         response = "error"
+        return {"error":"Failed to find Device"}, 404
     
-    print(response)
-    return jsonify(response)
     
     
 
@@ -265,9 +265,9 @@ def get_devices():
         ]
 
     if device_list:
-        return jsonify(device_list)
+        return jsonify(device_list),302
 
-    return jsonify({"Error"})
+    return {"error": "No devices found"},404
     
     
 @app.route('/adddevice', methods=['POST'])
@@ -281,17 +281,16 @@ def addDevice():
     desc = data.get("desc")
     dType = data.get("type")
     
-    
 
     if name and ip and id and desc and dType:
         response = "success"
         add_deviceSQL(id, name, ip, desc, dType)
+        return {"message":"Created Device"}, 201 
 
     else:
         response = "error"
-    
-    print(response)
-    return jsonify(response)    
+        return {"error": "data error"}, 400 
+     
    
 def CLIInit(type):
     type = type.replace(".", ":")
@@ -314,7 +313,6 @@ def theFile(type):
     
     
 
-    
 
 @app.route('/data', methods=['POST'])
 def receive_data():
@@ -324,29 +322,26 @@ def receive_data():
     
     id = data.get("deviceID")
     flash_code = data.get("flashCode")
-    
-    
-    device = device_by_id(id)
-    
-    ip = device["DeviceIP"]
-    dtype = device["deviceType"]
-    
-    command_args = CLIInit(dtype)
-    tf = theFile(dtype)
-    
-    if flash_code:
-        if(create_ino_file("userSketch", flash_code, command_args,tf,ip)):
-            response = "Data received successfully"
-        else:
-            response = "Compilation failure"
+    if flash_code and id:
+        device = device_by_id(id)
         
-        # Log "yippee" if both values are present
-    else:
-        response = "input error"
-        #on error to compile return data not successful
-    print(response)
+        ip = device["DeviceIP"]
+        dtype = device["deviceType"]
+        
+        command_args = CLIInit(dtype)
+        tf = theFile(dtype)
+    
 
-    return jsonify(response)
+        if(create_ino_file("userSketch", flash_code, command_args,tf,ip)):
+            return {"message": "sketch successful and device updated"},200
+        else:
+            return {"message": "sketch unsuccessful and device updated"},200
+        
+        # Log if both values are present
+    else:
+        return {"error": "failure to reach device"}, 400
+        #on error to compile return data not successful
+
 
 test1 = "void setup() { Serial.begin(9600); pinMode(2, OUTPUT); Serial.println(1); } void loop() { digitalWrite(2, HIGH); Serial.println(1); delay(500); digitalWrite(2, LOW); Serial.println(0); delay(500); }"
  #Make this not upload just compile
@@ -385,7 +380,7 @@ def create_ino_file(file_name, content,cmd,tf,ip):
         else:
             return False
         
-        #after running we need to get the file locaiton and send an HTTP Post to the deviceIP/upload with the binary attached to it
+        #after running we get the file locaiton and send an HTTP Post to the deviceIP/upload with the binary attached to it
         #This requires the length of the file as well as the file both gathered from the standard python file functions
     
     except Exception as e:

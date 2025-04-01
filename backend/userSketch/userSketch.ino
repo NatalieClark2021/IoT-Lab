@@ -54,7 +54,7 @@
         uint8_t otaDone = 0;
         String ssid = "IoT Test";
         String password = "password12";
-        IPAddress LocalIP(192,168,1,101);
+        IPAddress LocalIP(192,168,1,22);
         IPAddress gateway(192,168,1,1);
         IPAddress subnet(255,255,255,0);
         void staMode() {
@@ -122,25 +122,4 @@
             if (otaDone > 1) {
             }
         }
-        void setup() {
-
-    //setup initializer
-    Serial.begin(115200);
-    staMode();
-    webServerInit();
-    tkSecond.attach(1, everySecond);
-
-     // Your setup code here
-  
-  }
-  
-
-void loop() {
-
-    //loop initializer
-    server.handleClient();
-    delay(10);
-    
-    // Your loop code here
-
-  }
+        test
