@@ -122,4 +122,30 @@
             if (otaDone > 1) {
             }
         }
-        test
+        void setup() {
+
+    //setup initializer
+    Serial.begin(115200);
+    staMode();
+    webServerInit();
+    tkSecond.attach(1, everySecond);
+
+     // Your setup code here
+    pinMode(2,OUTPUT);
+  
+  }
+  
+
+void loop() {
+
+    //loop initializer
+    server.handleClient();
+    delay(10);
+    
+    // Your loop code here
+    digitalWrite(2,HIGH);
+    delay(500);
+    digitalWrite(2,LOW);
+    delay(500);
+
+  }

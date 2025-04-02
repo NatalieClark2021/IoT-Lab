@@ -146,20 +146,24 @@ def conjoin(userSample,ip):
 
 
 def add_deviceSQL(device_id, name, ip, description, device_type):
-    cnx= mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
-    cursor = cnx.cursor()
+    
+    try:
+        cnx= mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
+        cursor = cnx.cursor()
 
-    query = ("INSERT INTO devicest (DeviceID, DeviceName, DeviceIP, DeviceDescription, deviceType)"
-    "VALUES (%s, %s, %s, %s, %s);")
-    cursor.execute(query, (device_id, name, ip, description, device_type))
-    cnx.commit()
-    cursor.close()
-    cnx.close()
+        query = ("INSERT INTO devicest (DeviceID, DeviceName, DeviceIP, DeviceDescription, deviceType)"
+        "VALUES (%s, %s, %s, %s, %s);")
+        cursor.execute(query, (device_id, name, ip, description, device_type))
+        cnx.commit()
+        cursor.close()
+        cnx.close()
+        return "success SQL add"
+    
+    except:
+        return "failure to add"
 
-    return {"success SQL add"}
 
 def get_devicesSQL():
-
     cnx = mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
     cursor = cnx.cursor(dictionary=True)
     query =("SELECT * FROM devicest;")
@@ -172,9 +176,22 @@ def get_devicesSQL():
     return {"devices": devices} 
 
 
+#tester function not for production
+def delALL():
+    cnx = mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
+    cursor = cnx.cursor()
+    query =("DELETE FROM devicest;")
+    cursor.execute(query)
+    cnx.commit()
+    cursor.close()
+   
+    cnx.close()
+
+    return "deleted"
 
 def delete_deviceSQL(device_id):
 
+    try:
         cnx= mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
         cursor = cnx.cursor()
 
@@ -185,6 +202,10 @@ def delete_deviceSQL(device_id):
 
         cursor.close()
         cnx.close()
+        
+        return "success"
+    except:
+        return "failure"
 
     
 def device_by_id(device_id):
@@ -265,7 +286,7 @@ def get_devices():
         ]
 
     if device_list:
-        return jsonify(device_list),302
+        return jsonify(device_list),200
 
     return {"error": "No devices found"},404
     

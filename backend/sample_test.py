@@ -1,86 +1,104 @@
 import pytest
-from serverSide import users,User,add,delete,verify
-
-def test_add_user_success(): #test adding a single users add -expects success
-    users.clear()
-
-    username = "testuser"
-    password = "testpass"
-    output = add(users,username, password)
-    
-    assert output == "Object testuser added" 
-    assert len(users) == 1 
-
-def test_add_multiple_users():  #test multiple users add -expects success
-    users.clear()
-
-    add(users,"test1", "pass1")
-    add(users,"test2", "pass2")
-    add(users,"test3", "pass3")
-
-    assert len(users) == 3 
-    assert users[0].name == "test1"
-
-def test_add_user_duplicateUser(): #test duplicate username (expects failure)
-    users.clear()
-
-    username = "testuser"
-    password = "testpass"
-    output = add(users,username, password)
-    output = add(users,"testuser", "gfhjkl")
-    
-    assert output == "User or Password already in use" 
-    assert len(users) == 1 
-    
+from serverSide import add_deviceSQL, delete_deviceSQL, get_devicesSQL, delALL, device_by_id
 
 
 
+#============================================================
 
 
-def test_delete_second(): #check that middle array delete works
-    users.clear()
+# def add_deviceSQL(device_id, name, ip, description, device_type):
+#     cnx= mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
+#     cursor = cnx.cursor()
+
+#     query = ("INSERT INTO devicest (DeviceID, DeviceName, DeviceIP, DeviceDescription, deviceType)"
+#     "VALUES (%s, %s, %s, %s, %s);")
+#     cursor.execute(query, (device_id, name, ip, description, device_type))
+#     cnx.commit()
+#     cursor.close()
+#     cnx.close()
+
+#     return {"success SQL add"}
+
+def test_add_sql(): #success test
+    output =  add_deviceSQL(998,"test","test","test","test") 
+    delete_deviceSQL(998) 
+    assert output == "success SQL add"  
+    
+def test_add_sql_one():    #fail test
+    output =  add_deviceSQL("test","test","test","test","test") 
+    
+    assert output == "failure to add"  
+    
+
+def test_add_sql_three():    #fail test
+
+    add_deviceSQL(7,"test","test","test","test") 
+    output =  add_deviceSQL(7,"test","test","test","test") 
+    delete_deviceSQL(7) 
+    assert output == "failure to add"  
     
     
-    add(users,"test1", "pass1")
-    add(users,"test2", "pass2")
-    add(users,"test3", "pass3")
+    #delete tests
     
-    current = len(users)
+def test_delete_sql():    #success test
+   
+    add_deviceSQL(7,"test","test","test","test") 
+    output =  delete_deviceSQL(7) 
     
-    result = delete(users,"test2")
-    assert result == "Object test2 removed"
+    assert output == "success"  
     
-def test_delete_nonexistant_user(): #Attempt to delete a user that does not exist
-    add(users,"test1","pass1")
+def test_delete_sql_one():    #fail test
+   
+    output =  delete_deviceSQL("test") 
     
-    current = len(users)
-    
-    response =delete(users,"test2")
-    
-    assert response == "Failure to delete object"
+    assert output == "failure"  
     
 
 
+#get tests
+
+
+
+
+def test_get_all():    #empty test
+   
+    delALL()
+    output = get_devicesSQL() 
     
+    assert len(output["devices"])== 0 
+    
+def test_get_all_one():    #full test
+   
+    delALL()
+    add_deviceSQL(998,"test","test","test","test") 
+    output = get_devicesSQL() 
+    delALL()
+    assert len(output["devices"]) > 0 
     
     
 
-def test_both_valid(): #valid user and pass
-    add(users,"test1", "pass1")
-    output = verify("test1", "pass1")
+#get by id
+
+def test_by_id(): #Assert != None when device does exist
+    delALL()
     
-    assert output == "test1 is successfully logged in"
+    add_deviceSQL(7,"test","test","test","test") 
+    
+    output = device_by_id(7)
+    
+    assert output != None
+    
+def test_by_id_two(): #assert NONE device when device not found
+    delALL()
+    
+    output = device_by_id(7)
+    
+    delALL()
+    assert output == None
+    
+
+
+   
     
     
-def test_pass_invalid(): #valid username invalid pass
-    add(users,"test1", "pass1")
-    output = verify("test1", "pass4")
-    
-    assert output == "Wrong username or password"
-        
-def test_username_invalid():    #invalid username and valid password
-    add(users,"test1", "pass1")
-    output = verify("test4", "pass3")
-    
-    assert output == "Wrong username or password"      
     
