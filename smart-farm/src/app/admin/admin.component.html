@@ -1,4 +1,4 @@
-
+<!-- this secton displays a form to add or delete a device -->
 <div class="body">
 
 <div class ="square">
@@ -13,7 +13,7 @@
   <option value="del">Delete Device</option>
 </select>
 
-
+<!-- it uses ngif to dynamically display the form type chosen by the user, the add form for add and the delete form for when they choose to delete a device -->
 
 <div *ngIf= "selectedValue == 'add'">
     <h2>Add Device</h2>

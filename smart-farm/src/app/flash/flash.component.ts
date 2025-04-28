@@ -14,15 +14,16 @@ import { get } from 'http';
   styleUrl: './flash.component.css'
 })
 export class FlashComponent {
+  //this the our servers ip
   url = 'http://127.0.0.1:80';
   name = '';
 
+  //intitalize an array of devices to empty
   devices: any[] = [];
 
   // Form controls
   selectedDevice = new FormControl('');
-
-
+  //flash code's form control is given some starter code in order to help a user write functional code in our IDE
   flashCode = new FormControl(
     `void setup() {
 
@@ -49,33 +50,40 @@ void loop() {
 
   constructor(private http: HttpClient){}
 
+  // on component being initialized call pull devices to populate the drop down list
   ngOnInit(): void {
       this.pullDevices();
   }
 
+  // pull devices sents a get request to the server and stores the returned data in the local devices
   pullDevices(){
     this.http.get<any>(`${this.url}/getdevice`).subscribe(data => {
       this.devices = data;
+      // automaticall selects the first device
       this.selectedDevice.setValue(this.devices[0].id);
       console.log("done");
     })
   }
 
+// when the user has chosen a device, and written some code for it, they can send the form
  sendForm(){
+  // myData packages up json data with the tags deviceID and flashcode being set to their respective values
     var myData = {
       deviceID: this.selectedDevice.value ,
       flashCode: this.flashCode.value
     };
-    var termVal = document.getElementById("terminalValue");
 
+    //while we await the servers response we set the terminal to say loading
+    var termVal = document.getElementById("terminalValue");
     if(termVal){
       termVal.innerText = "Loading..."
     }
 
+    // this makes a post request to the /data endpoint
     this.http.post(`${this.url}/data`, myData).subscribe(data =>{
       console.log("done" + data);
 
-
+      //on a successful message response or an error response, we print that to the terminal
       if ('message' in data){
         if(termVal){
           termVal.innerText = "Response from server: " + data.message;
@@ -89,9 +97,5 @@ void loop() {
     })
   } 
   
- //http
-
-
-   //http get request to server
 }
 
