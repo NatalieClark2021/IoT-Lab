@@ -10,10 +10,14 @@ app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
 
-
+# conjoin takes the user code, and celans the device IP address, and uses string interpolation in order to
+# produce code that runs on the users specified device along with our teams OTA stub
 
 def conjoin(userSample,ip):
+    
     ip = ip.replace(".",",")
+
+    #OTA STUB
     part1 = """
     
         #include <WiFi.h>
@@ -139,44 +143,54 @@ def conjoin(userSample,ip):
             }
         }
         """
+    #appends our dynamic stub to the users code sent from the front end
     return part1+userSample
 
 
 #database stuff=============================================================
 
-
+#this function takes in all of the device data as parameters and uses it to insert a new device into the database
 def add_deviceSQL(device_id, name, ip, description, device_type):
     
     try:
+        #attempts to connect to the database
         cnx= mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
         cursor = cnx.cursor()
 
+        #this section inserts our passed arguments and the performs the query
         query = ("INSERT INTO devicest (DeviceID, DeviceName, DeviceIP, DeviceDescription, deviceType)"
         "VALUES (%s, %s, %s, %s, %s);")
         cursor.execute(query, (device_id, name, ip, description, device_type))
         cnx.commit()
         cursor.close()
         cnx.close()
+
+        #returns a success message
         return "success SQL add"
     
     except:
         return "failure to add"
 
 
+# get devices allows us to connect to the database and query for all of the devices within the database
 def get_devicesSQL():
+    #we establish our connection
     cnx = mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
     cursor = cnx.cursor(dictionary=True)
+
+    # Our query is performed
     query =("SELECT * FROM devicest;")
     cursor.execute(query)
     devices = cursor.fetchall()
 
     cursor.close()
     cnx.close()
-
+    #we return the dictionary devices that is holding all of the returned devices
     return {"devices": devices} 
 
 
 #tester function not for production
+# This serves our unit tests allowing us to clean up the database after tests
 def delALL():
     cnx = mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
     cursor = cnx.cursor()
@@ -189,13 +203,15 @@ def delALL():
 
     return "deleted"
 
+#This allows a user to pass a devices ID in order to delete it from the database
 def delete_deviceSQL(device_id):
 
     try:
+        #we connect to the database
         cnx= mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
         cursor = cnx.cursor()
 
-        #SQL
+        #we run our query passing in the devices id
         query ="DELETE FROM devicest WHERE DeviceID = %s;"
         cursor.execute(query, (device_id,))
         cnx.commit()
@@ -207,12 +223,15 @@ def delete_deviceSQL(device_id):
     except:
         return "failure"
 
-    
+
+# This function allows a user to select a device by passing in its ID
 def device_by_id(device_id):
 
+    #connect to the database
     cnx= mysql.connector.connect(host='localhost', user='root',password='pass13', database='iotdatabase') 
     cursor = cnx.cursor(dictionary=True) 
 
+    #write then exceute our query passing in the id
     select_query = "SELECT * FROM devicest WHERE DeviceID = %s;"
     cursor.execute(select_query, (device_id,))
     device = cursor.fetchone() 
@@ -220,6 +239,7 @@ def device_by_id(device_id):
     cursor.close()
     cnx.close()
 
+    #if the device is found we return that device as an object, otherwise we return none
     if device:
         print (device)
         return device
@@ -246,15 +266,19 @@ def device_by_id(device_id):
 
 
 #http requests
-
-@app.route('/deletedevice', methods=['POST']) #working
+#this sets a route with an end point /deletedevice that expects a POST request
+@app.route('/deletedevice', methods=['POST']) 
 def deleteDevice():
     
+    #we initialize our response to failure
     response = "failure"
+
+    #we get the data passed to the endpoint and find the ID by the tag id
     data = request.get_json()
-    
     theID = data.get("id")
 
+    #if we successfully get that data, we call the function to delete that device, then return a success message and code 200
+    #otherwise, we return a failure response and the code 404 for not found
     if theID:
         response = "success"
         delete_deviceSQL(theID)
@@ -266,14 +290,16 @@ def deleteDevice():
     
     
     
-
+#sets the end point /getdevice that expects a GET request
 @app.route('/getdevice', methods=['GET'])
 def get_devices():
     response = "failure"
-    result = get_devicesSQL()
 
+    #we collect the devices from our get devices sql function, then get the actual devices from the dictionary tag devices
+    result = get_devicesSQL()
     devices = result["devices"]
 
+    #loop through the devices as device, then store the individual attributes of the devices as device objects, and store them in device_list
     device_list = [
         {
             "name": device['DeviceName'],
@@ -285,17 +311,22 @@ def get_devices():
         for device in devices
         ]
 
+    #if the device is isnt empty, we return that data and a 200 success code
+    # otherwise we return an error message and a 404 code
     if device_list:
         return jsonify(device_list),200
 
     return {"error": "No devices found"},404
     
-    
+
+#we create the /adddevice input and it expects a POST request
 @app.route('/adddevice', methods=['POST'])
 def addDevice():
     response = "failure"
+    #we get the data sent to the server
     data = request.get_json()
     
+    #each tag from within the data is stored into the individual attributes of the device
     name = data.get("name")
     ip = data.get("IP")
     id = data.get("ID")
@@ -303,18 +334,21 @@ def addDevice():
     dType = data.get("type")
     
 
+    #when each attribute is found we call our SQL function to add a device and return a success message with a 201 code
     if name and ip and id and desc and dType:
         response = "success"
         add_deviceSQL(id, name, ip, desc, dType)
         return {"message":"Created Device"}, 201 
-
+    #otherwise we return the error message and 400 code
     else:
         response = "error"
         return {"error": "data error"}, 400 
      
-   
+# Our CLI initializer takes in the device type and initializes our CLI arguments
 def CLIInit(type):
+    #we clean the device type in case of user error
     type = type.replace(".", ":")
+    #we pass in the standard arguments, as well as the device type
     command_args = [
     "arduino-cli", 
     "compile", 
@@ -327,38 +361,46 @@ def CLIInit(type):
     
     ]  
     return command_args 
-    
+
+# we set a local files attributes to match its device type
 def theFile(type):
+    #we clean our device to protect from user error
     type = type.replace(":", ".")
+    #we return the file path with the correct device type
     return "C:\\Users\\Natal\\OneDrive\\demo\\Documents\\WORKzone\\IOTLab-Virtualization\\backend\\userSketch\\build\\"+type+"\\userSketch.ino.bin"
     
     
 
-
+# set up the endpoint data that expects a POST request
 @app.route('/data', methods=['POST'])
 def receive_data():
     #Read JSON data
-   
     data = request.get_json()
     
+    #get ID and code information from the json tags
     id = data.get("deviceID")
     flash_code = data.get("flashCode")
+
+    #if both are present, we proceed
     if flash_code and id:
+        #call our sql function in order to get the device and setting the needed attributed to ip and dtype respectively
         device = device_by_id(id)
         
         ip = device["DeviceIP"]
         dtype = device["deviceType"]
         
+        #running command args and setting up the file information by passing in the device type
         command_args = CLIInit(dtype)
         tf = theFile(dtype)
     
-
+        #if we successfully create an ino file with the arguments flashcode, command_args, tf, and ip, return a success message
         if(create_ino_file("userSketch", flash_code, command_args,tf,ip)):
             return {"message": "sketch successful and device updated"},200
+        #otherwise return an error message
         else:
             return {"message": "sketch unsuccessful and device updated"},200
         
-        # Log if both values are present
+      
     else:
         return {"error": "failure to reach device"}, 400
         #on error to compile return data not successful
@@ -370,21 +412,23 @@ test1 = "void setup() { Serial.begin(9600); pinMode(2, OUTPUT); Serial.println(1
 
 
 
-
+#the create ino file passing in arguments to give it the file name, the code it needs to write, the command line arguments, the configured file, and the ip address of the device
 def create_ino_file(file_name, content,cmd,tf,ip):
 
     
     print("made it to create ino")
     
+    #calls conjoin to dynamically set up our stub
     content = conjoin(content,ip)
 
     # os.makedirs(user_folder, exist_ok=True)
     
+    #check if we have the proper file type, and if not, append .ino to it
     if not file_name.endswith(".ino"):
         file_name += ".ino"
 
     try:
-        
+        #write the content to the file
         with open("C:\\Users\\Natal\\OneDrive\\demo\\Documents\\WORKzone\\IOTLab-Virtualization\\backend\\userSketch\\userSketch.ino", 'w') as ino_file:
             ino_file.write(content)
         
