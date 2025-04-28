@@ -75,8 +75,15 @@ void loop() {
     this.http.post(`${this.url}/data`, myData).subscribe(data =>{
       console.log("done" + data);
 
-      if(termVal){
-        termVal.innerText = data + " - server"
+
+      if ('message' in data){
+        if(termVal){
+          termVal.innerText = "Response from server: " + data.message;
+        }
+      }else if('error' in data){
+        if(termVal){
+          termVal.innerText = "Response from server: " + data.error;
+        }
       }
   
     })

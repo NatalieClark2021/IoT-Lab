@@ -131,8 +131,7 @@
     tkSecond.attach(1, everySecond);
 
      // Your setup code here
-    pinMode(2,OUTPUT);
-  
+  pinMode(2,OUTPUT);
   }
   
 
@@ -143,9 +142,9 @@ void loop() {
     delay(10);
     
     // Your loop code here
-    digitalWrite(2,HIGH);
-    delay(500);
-    digitalWrite(2,LOW);
-    delay(500);
+   digitalWrite(2,HIGH);
+   delay(500);
+   digitalWrite(2,LOW);
+   delay(500);
 
   }

@@ -38,8 +38,14 @@ export class AdminComponent {
     this.http.post(`${this.url}/adddevice`, theData).subscribe(data =>{
       var termVal = document.getElementById("response");
     
-      if(termVal){
-        termVal.innerText = "Response from server: " + data;
+      if ('message' in data){
+        if(termVal){
+          termVal.innerText = "Response from server: " + data.message;
+        }
+      }else if('error' in data){
+        if(termVal){
+          termVal.innerText = "Response from server: " + data.error;
+        }
       }
     })
 
@@ -53,9 +59,17 @@ export class AdminComponent {
 
       this.http.post(`${this.url}/deletedevice`, theData).subscribe(data =>{
         var termVal = document.getElementById("response");
-        if(termVal){
-          termVal.innerText = "Response from server: " + data;
+
+        if ('message' in data){
+          if(termVal){
+            termVal.innerText = "Response from server: " + data.message;
+          }
+        }else if('error' in data){
+          if(termVal){
+            termVal.innerText = "Response from server: " + data.error;
+          }
         }
+
       })
 
   }
