@@ -1,4 +1,7 @@
 # IOTLab-Virtualization
+
+This project allows any user to type code into our ide and remotely update devices. It serves to virtualize SEMO's IoT Lab to further research and provide a good tool for professors and students. 
+
  
 Steps to setup the front-end
 1. download the project and cd into smart-farm
@@ -23,3 +26,11 @@ Steps to setup the backend
 Steps to setup database
 
 Steps to setup network
+1. Acquire a wireless router.
+2. Depending on what router you obtain you need to configure the router by following its set up guide. For example, the router that was used in the prototype required first a wired lan connection in order to configure it.
+3. In the configuration, set a static IP address for it based on the network that you are using. (ie 192.168.2.10 255.255.255.0).
+4. Create an SSID that is easy to remember and take note of it.
+5. Create a password for the SSID and take note of it. The password can be as secure as you want, but you should follow basic password standards.
+6. You can test connectivity by pinging devices that are connected to the router. For
+example, the one used for the prototype had a menu that would display what was connected to it and the IP address given to that device due to the router having DHCP on it for devices that do not have a static address. After getting the IP address of the connected wireless device, ping the device through the command prompt on the hardwired computer and you should get a confirmation ping.
+7. After the router is set up, you can now access the router wireless if need be by connecting to the SSID and in a web browser putting in the IP address that you set up statically.
