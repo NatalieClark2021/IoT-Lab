@@ -27,11 +27,11 @@ Steps to setup the backend
 10. to run the tests in the terminal run 'pytest sample_test.py'
 
 Steps to setup database
-Step 1: Download MySQL workbench for the database
-Step 2: Set up a host
-Step 3: Create the table
-CREATE TABLE devices ( DeviceID INT PRIMARY KEY, DeviceName VARCHAR(255), DeviceIP VARCHAR(255), DeviceDescription VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP );
-Step  4: input the information into the table
+1. Download MySQL workbench for the database
+2. Set up a host
+3. Create the table with this line
+    'CREATE TABLE devices ( DeviceID INT PRIMARY KEY, DeviceName VARCHAR(255), DeviceIP VARCHAR(255), DeviceDescription VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP );'
+4. input the information into the table
 
 Steps to setup network
 1. Acquire a wireless router.
