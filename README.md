@@ -1,12 +1,13 @@
 # IOTLab-Virtualization
 
 This project allows any user to type code into our ide and remotely update devices. It serves to virtualize SEMO's IoT Lab to further research and provide a good tool for professors and students. 
-
+Any student or faculty who wants further clarification on the project can reach me at NatalieClark2021@gmail.com
  
 Steps to setup the front-end
-1. download the project and cd into smart-farm
-2. in the terminal run 'npm install'
-3. run 'ng serve' to see the front end locally
+1. npm install -g @angular/cli
+2. download the project and cd into smart-farm
+3. in the terminal run 'npm install'
+4. run 'ng serve' to see the front end locally
 
 Steps to setup the backend
 1. download the project, and cd into the backend
@@ -17,13 +18,20 @@ Steps to setup the backend
     2. pip install Flask-Cors
     3. pip install requests
     4. pip install mysql.connector
-5. These should cover the dependencies, if not, they are listed as imports at the top and should be simple to include
-6. To run the server, in the terminal, run 'python serverSide.py'
-7. Option: set up testing with Pytest
-8. in the terminal run 'pip install -U pytest'
-9. to run the tests in the terminal run 'pytest sample_test.py'
+  
+5. Go to the Arduino docs and donwload the CLI tool https://docs.arduino.cc/arduino-cli/installation/
+6. These should cover the dependencies, if not, they are listed as imports at the top and should be simple to include
+7. To run the server, in the terminal, run 'python serverSide.py'
+8. Option: set up testing with Pytest
+9. in the terminal run 'pip install -U pytest'
+10. to run the tests in the terminal run 'pytest sample_test.py'
 
 Steps to setup database
+Step 1: Download MySQL workbench for the database
+Step 2: Set up a host
+Step 3: Create the table
+CREATE TABLE devices ( DeviceID INT PRIMARY KEY, DeviceName VARCHAR(255), DeviceIP VARCHAR(255), DeviceDescription VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP );
+Step  4: input the information into the table
 
 Steps to setup network
 1. Acquire a wireless router.
